@@ -22,3 +22,6 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 *.egg-info/
+
+# Streamlit secrets (real values live in the Cloud UI, never in the repo)
+.streamlit/secrets.toml

@@ -1,24 +1,22 @@
-jupyter==1.1.1
-ipython==9.15.0
-notebook==7.6.0
-jupyterlab==4.6.1
-langchain==1.3.13
-langchain_community==0.4.2
-numpy==2.5.1
-sqlalchemy==2.0.51
-pypdf==6.14.2
-sentence-transformers==5.6.0
+# Runtime dependencies for the Streamlit app (app/streamlit_app.py).
+# Streamlit Community Cloud installs from THIS file at the repo root.
+#
+# Deliberately EXCLUDES torch and sentence-transformers: they are needed only to run
+# BAAI/bge-m3 locally, which does not fit a Community Cloud container. The deployed app
+# embeds queries through the HuggingFace Inference API using the same model, so the 1024-d
+# vectors still match the index. src/embeddings.py imports sentence_transformers lazily so
+# the package stays importable without them.
+#
+# To run the NOTEBOOK locally you need the fuller set: requirements-notebook.txt
+streamlit==1.62.0
+pinecone==9.1.0
 chromadb==1.5.9
 bm25s==0.2.13
-langchain-groq
+numpy==2.5.1
+requests
 python-dotenv
-langsmith
-openai
-langchain-openai
+langchain==1.3.13
+langchain-core
+langchain-google-genai
 langchain-mistralai
 langchain-ollama
-langchain-google-genai
-pandas
-langchain-anthropic
-langgraph
-pinecone==9.1.0

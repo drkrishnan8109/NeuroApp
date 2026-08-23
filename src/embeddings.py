@@ -26,7 +26,12 @@ from typing import Any, List
 
 import numpy as np
 import chromadb
-from sentence_transformers import SentenceTransformer
+
+# sentence_transformers is imported lazily inside _load_model rather than here. It pulls
+# torch (~1 GB), which does not fit a Streamlit Community Cloud container — and a deployed
+# app never needs it, because queries are embedded through the HuggingFace Inference API.
+# Importing it at module scope would make `from src import ...` fail on any slim install,
+# even for code paths that never touch a local model.
 
 # Anchor the default vector-store location to the project root (the parent of this src/
 # dir) via __file__, so it resolves the same whether a notebook/script is launched from
@@ -119,6 +124,8 @@ class EmbeddingManager:
         models); if that combination isn't supported on this device (Apple's MPS
         backend has had inconsistent bf16 support) it falls back to the default dtype.
         """
+        from sentence_transformers import SentenceTransformer   # lazy: see module header
+
         print(f"Loading embedding model: {self.model_name} (device={self.device}, bf16={self.use_bf16})")
         try:
             if self.use_bf16:
