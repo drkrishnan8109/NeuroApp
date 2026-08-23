@@ -6,14 +6,13 @@
 .env
 
 # --- Corpus and derived data -------------------------------------------------
-# Licensed medical textbooks. Redistributing them via a repository is a
-# licensing question, not a technical one. Bradley's alone is 117 MB, over
-# GitHub's 100 MB per-file limit, so it would need LFS even if that were settled.
-pdfs/
-
-# Everything under data/ is DERIVED from pdfs/ and regenerates by running the
-# notebook: the parsed-page cache and the Chroma vector store (362 MB).
-data/
+# pdfs/ (162 MB) and data/ (362 MB) ARE tracked, via Git LFS — see .gitattributes.
+# Two files exceed GitHub's 100 MB per-file limit and cannot be stored any other
+# way: data/vector_store/chroma.sqlite3 (286 MB) and Bradley's PDF (117 MB).
+#
+# Note LFS keeps every version of a tracked file. Re-running ingestion rewrites
+# chroma.sqlite3, and each commit of it adds another ~286 MB against the 1 GB
+# free-tier storage quota.
 
 # --- Python ------------------------------------------------------------------
 .venv/

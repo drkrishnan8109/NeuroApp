@@ -50,6 +50,21 @@ _HF_URL = "https://router.huggingface.co/hf-inference/models/{model}/pipeline/fe
 
 
 # --------------------------------------------------------------------------- embedders
+_HF_TOKEN_NAMES = ("HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN", "HUGGING_FACE_KEY",
+                   "HUGGINGFACE_API_KEY")
+
+
+def hf_token() -> Optional[str]:
+    """First HuggingFace token found under any of the names in common use.
+
+    Kept in one place so the constructor and get_embedder() cannot disagree: gating the
+    selector on HF_TOKEN while the constructor accepted HUGGING_FACE_KEY meant a valid
+    token was present, the API embedder worked, and the local 2.3 GB model was loaded
+    anyway — silently, with nothing to indicate the hosted path had been skipped.
+    """
+    return next((os.getenv(n) for n in _HF_TOKEN_NAMES if os.getenv(n)), None)
+
+
 class HFInferenceEmbedder:
     """Embed queries through the HuggingFace Inference API.
 
@@ -61,13 +76,7 @@ class HFInferenceEmbedder:
 
     def __init__(self, model: str = EMBED_MODEL, token: Optional[str] = None, timeout: int = 30):
         self.model = model
-        self.token = token or os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACEHUB_API_TOKEN")
-        if not self.token:
-            raise RuntimeError(
-                "HF_TOKEN is not set. Create a free token at "
-                "https://huggingface.co/settings/tokens and add it to the environment "
-                "(the Inference API rejects unauthenticated requests with HTTP 401)."
-            )
+        self.token = token or hf_token()
         self.timeout = timeout
 
     def embed_query(self, text: str) -> np.ndarray:
@@ -109,7 +118,7 @@ def get_embedder():
         return LocalEmbedder()
     if choice == "hf":
         return HFInferenceEmbedder()
-    return HFInferenceEmbedder() if os.getenv("HF_TOKEN") else LocalEmbedder()
+    return HFInferenceEmbedder() if hf_token() else LocalEmbedder()
 
 
 # ------------------------------------------------------------------- corpus for BM25
