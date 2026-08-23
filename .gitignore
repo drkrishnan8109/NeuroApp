@@ -1,0 +1,25 @@
+# --- Secrets -----------------------------------------------------------------
+# .env holds 8 live API keys. Committing it writes them into git history
+# permanently — a later `git rm` does not remove them from earlier commits, and
+# pushing even once means every key must be rotated. Use .env.example as the
+# tracked template and keep the real file local.
+.env
+
+# --- Corpus and derived data -------------------------------------------------
+# Licensed medical textbooks. Redistributing them via a repository is a
+# licensing question, not a technical one. Bradley's alone is 117 MB, over
+# GitHub's 100 MB per-file limit, so it would need LFS even if that were settled.
+pdfs/
+
+# Everything under data/ is DERIVED from pdfs/ and regenerates by running the
+# notebook: the parsed-page cache and the Chroma vector store (362 MB).
+data/
+
+# --- Python ------------------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+*.egg-info/
